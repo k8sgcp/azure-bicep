@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "eastus"
+    },
+    "environment": {
+      "value": "prod"
+    },
+    "vmCount": {
+      "value": 3
+    },
+    "vmSize": {
+      "value": "Standard_B2s"
+    },
+    "adminUsername": {
+      "value": "azureuser"
+    },
+    "adminPassword": {
+      "value": "P@ssw0rd123!Prod"
+    },
+    "deployStorage": {
+      "value": true
+    }
+  }
+}
