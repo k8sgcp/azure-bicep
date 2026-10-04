@@ -1,0 +1,65 @@
+name: Bicep Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - develop
+    paths:
+      - 'templates/**'
+      - 'parameters/**'
+      - '.github/workflows/bicep-deploy.yml'
+
+env:
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set environment from branch
+        id: set-env
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "ENVIRONMENT=prod" >> $GITHUB_OUTPUT
+            echo "RESOURCE_GROUP=prod-rg" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
+            echo "ENVIRONMENT=staging" >> $GITHUB_OUTPUT
+            echo "RESOURCE_GROUP=staging-rg" >> $GITHUB_OUTPUT
+          else
+            echo "ENVIRONMENT=dev" >> $GITHUB_OUTPUT
+            echo "RESOURCE_GROUP=dev-rg" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build Bicep
+        run: az bicep build --file templates/main.bicep --outdir outputs/
+
+      - name: Validate template
+        run: |
+          az deployment group validate \
+            --resource-group ${{ steps.set-env.outputs.RESOURCE_GROUP }} \
+            --template-file outputs/main.json \
+            --parameters parameters/${{ steps.set-env.outputs.ENVIRONMENT }}.parameters.json
+
+      - name: Deploy template
+        run: |
+          az deployment group create \
+            --name ${{ steps.set-env.outputs.ENVIRONMENT }}-deployment \
+            --resource-group ${{ steps.set-env.outputs.RESOURCE_GROUP }} \
+            --template-file outputs/main.json \
+            --parameters parameters/${{ steps.set-env.outputs.ENVIRONMENT }}.parameters.json
+
+      - name: Output deployment info
+        run: |
+          echo "Deployed to ${{ steps.set-env.outputs.ENVIRONMENT }} environment"
+          echo "Resource group: ${{ steps.set-env.outputs.RESOURCE_GROUP }}"
