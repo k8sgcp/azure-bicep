@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "location": {
-      "value": "eastus"
+      "value": "centralindia"
     },
     "environment": {
       "value": "prod"
@@ -18,7 +18,7 @@
       "value": "azureuser"
     },
     "adminPassword": {
-      "value": "P@ssw0rd123!Prod"
+      "value": "ProdPass123!Secure"
     },
     "deployStorage": {
       "value": true
