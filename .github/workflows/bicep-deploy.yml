@@ -11,10 +11,6 @@ on:
       - 'parameters/**'
       - '.github/workflows/bicep-deploy.yml'
 
-env:
-  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -39,7 +35,10 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
 
       - name: Build Bicep
         run: az bicep build --file templates/main.bicep --outdir outputs/
