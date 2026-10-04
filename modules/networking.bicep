@@ -5,6 +5,7 @@ metadata version = '1.0.0'
 // ============= PARAMETERS =============
 param location string
 param environment string
+param tags object = {}
 
 // ============= VARIABLES =============
 var vnetName = '${environment}-vnet'
@@ -17,6 +18,7 @@ var nsgName = '${environment}-nsg'
 resource nsg 'Microsoft.Network/networkSecurityGroups@2023-05-01' = {
   name: nsgName
   location: location
+  tags: tags
   properties: {
     securityRules: [
       {
@@ -53,6 +55,7 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2023-05-01' = {
 resource vnet 'Microsoft.Network/virtualNetworks@2023-05-01' = {
   name: vnetName
   location: location
+  tags: tags
   properties: {
     addressSpace: {
       addressPrefixes: [

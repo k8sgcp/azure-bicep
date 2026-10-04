@@ -6,13 +6,14 @@ metadata version = '1.0.0'
 param location string
 param environment string
 param deployStorage bool = true  // ← NEW: whether to deploy storage
+param tags object = {}
 
 // ============= VARIABLES =============
 var storageAccountName = '${replace(environment, '-', '')}${uniqueString(resourceGroup().id)}'
-var tags = {
+var storageTags = union(tags, {
   environment: environment
   managedBy: 'Bicep'
-}
+})
 
 // ============= RESOURCES =============
 
@@ -20,7 +21,7 @@ var tags = {
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = if (deployStorage) {
   name: storageAccountName
   location: location
-  tags: tags
+  tags: storageTags
   sku: {
     name: 'Standard_LRS'
   }

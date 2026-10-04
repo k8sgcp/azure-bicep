@@ -20,12 +20,16 @@ param adminPassword string
 
 param subnetId string
 
+param tags object = {}
+
 // ============= VARIABLES =============
-var tags = {
+var defaultTags = {
   environment: environment
   app: 'go-app'
   managedBy: 'Bicep'
 }
+
+var resourceTags = union(defaultTags, tags)
 
 // ============= RESOURCES =============
 
@@ -33,7 +37,7 @@ var tags = {
 resource nics 'Microsoft.Network/networkInterfaces@2023-05-01' = [for i in range(0, vmCount): {
   name: '${environment}-nic-${i}'
   location: location
-  tags: tags
+  tags: resourceTags
   properties: {
     ipConfigurations: [
       {
