@@ -23,6 +23,8 @@ param adminPassword string
 
 param deployStorage bool = false  // ← NEW: deploy storage or not
 
+param tags object = {}
+
 // ============= MODULES =============
 
 // Networking Module
@@ -30,6 +32,7 @@ module networkingModule '../modules/networking.bicep' = {
   name: 'networkingDeployment'
   params: {
     location: location
+    tags: tags
     environment: environment
   }
 }
